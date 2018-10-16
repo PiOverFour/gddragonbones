@@ -79,7 +79,7 @@ protected:
 
     bool _set(const StringName& _str_name, const Variant& _c_r_value);
     bool _get(const StringName& _str_name, Variant &_r_ret) const;
-    void _get_property_list(List<PropertyInfo> *_p_list) const;
+    virtual void _validate_property(PropertyInfo &property) const;
 
 public:
 	GDDragonBones();
@@ -125,9 +125,13 @@ public:
     void set_speed(float _f_speed);
     float get_speed() const;
 
+    void set_loop(int _b_loop);
+    int get_loop() const;
+
     void set_texture(const Ref<Texture> &_p_texture);
     Ref<Texture> get_texture() const;
 
+    void set_current_animation(String _str_curr_anim);
     String get_current_animation() const;
 
     float tell() const;
@@ -142,10 +146,10 @@ public:
     void    play_from_progress(float _f_progress);
 
     void    flip_x(bool _b_flip);
-    bool    is_fliped_x() const;
+    bool    is_flipped_x() const;
 
     void    flip_y(bool _b_flip);
-    bool    is_fliped_y() const;
+    bool    is_flipped_y() const;
 
     bool    is_playing() const;
 

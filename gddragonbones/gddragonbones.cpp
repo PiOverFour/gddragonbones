@@ -378,7 +378,7 @@ void GDDragonBones::flip_x(bool _b_flip)
     p_armature->getArmature()->advanceTime(0);
 }
 
-bool GDDragonBones::is_fliped_x() const
+bool GDDragonBones::is_flipped_x() const
 {
     return b_flip_x;
 }
@@ -392,7 +392,7 @@ void GDDragonBones::flip_y(bool _b_flip)
     p_armature->getArmature()->advanceTime(0);
 }
 
-bool GDDragonBones::is_fliped_y() const
+bool GDDragonBones::is_flipped_y() const
 {
     return b_flip_y;
 }
@@ -590,6 +590,26 @@ bool GDDragonBones::is_playing() const
     return b_inited && b_playing && p_armature->getAnimation()->isPlaying();
 }
 
+void GDDragonBones::set_current_animation(String _str_curr_anim)
+{
+    str_curr_anim = _str_curr_anim;
+    // if(str_curr_anim == _c_r_value)
+    //     return false;
+
+    if (b_inited)
+    {
+        if (str_curr_anim == "[none]")
+            stop();
+        else if (has_anim(str_curr_anim))
+        {
+            if(b_playing || b_try_playing)
+                play();
+            else
+                p_armature->getAnimation()->gotoAndStopByProgress(str_curr_anim.ascii().get_data());
+        }
+    }
+}
+
 String GDDragonBones::get_current_animation() const
 {
     if(!b_inited || !p_armature->getAnimation())
@@ -613,6 +633,22 @@ void GDDragonBones::_set_process(bool _b_process, bool _b_force)
         case ANIMATION_PROCESS_IDLE: set_process(_b_process && b_active); break;
     }
     b_processing = _b_process;
+}
+
+void GDDragonBones::set_loop(int _c_loop)
+{
+    c_loop = _c_loop;
+    if (b_inited && b_playing)
+    {
+        _reset();
+        play();
+    }
+
+}
+
+int GDDragonBones::get_loop() const
+{
+    return c_loop;
 }
 
 void GDDragonBones::set_texture(const Ref<Texture>& _p_texture) {
@@ -649,40 +685,6 @@ bool GDDragonBones::_set(const StringName& _str_name, const Variant& _c_r_value)
 {
     String name = _str_name;
 
-    if (name == "playback/curr_animation")
-    {
-        if(str_curr_anim == _c_r_value)
-            return false;
-
-        str_curr_anim = _c_r_value;
-        if (b_inited)
-        {
-            if (str_curr_anim == "[none]")
-                stop();
-            else if (has_anim(str_curr_anim))
-            {
-                if(b_playing || b_try_playing)
-                    play();
-                else
-                    p_armature->getAnimation()->gotoAndStopByProgress(str_curr_anim.ascii().get_data());
-            }
-        }
-    }
-
-   else if (name == "playback/loop")
-   {
-        c_loop = _c_r_value;
-        if (b_inited && b_playing)
-        {
-            _reset();
-            play();
-        }
-    }
-
-    else if (name == "playback/progress")
-    {
-       seek(_c_r_value);
-    }
 
     return true;
 }
@@ -692,12 +694,8 @@ bool GDDragonBones::_get(const StringName& _str_name, Variant &_r_ret) const
 
     String __name = _str_name;
 
-    if (__name == "playback/curr_animation")
+    if (__name == "playback_curr_animation")
         _r_ret = str_curr_anim;
-    else if (__name == "playback/loop")
-        _r_ret = c_loop;
-    else if (__name == "playback/progress")
-        _r_ret = get_progress();
     return true;
 }
 
@@ -736,12 +734,13 @@ void GDDragonBones::_bind_methods()
     CLASS_BIND_GODO::bind_method(METH("stop_all"), &GDDragonBones::stop_all);
     CLASS_BIND_GODO::bind_method(METH("reset"), &GDDragonBones::_reset);
     CLASS_BIND_GODO::bind_method(METH("play"), &GDDragonBones::play);
-    CLASS_BIND_GODO::bind_method(METH("play_from_time"), &GDDragonBones::play_from_time);
-    CLASS_BIND_GODO::bind_method(METH("play_from_progress"), &GDDragonBones::play_from_progress);
+    CLASS_BIND_GODO::bind_method(METH("play_from_time", "time"), &GDDragonBones::play_from_time);
+    CLASS_BIND_GODO::bind_method(METH("play_from_progress", "progress"), &GDDragonBones::play_from_progress);
 
     CLASS_BIND_GODO::bind_method(METH("has", "name"), &GDDragonBones::has_anim);
     CLASS_BIND_GODO::bind_method(METH("is_playing"), &GDDragonBones::is_playing);
 
+    CLASS_BIND_GODO::bind_method(METH("set_current_animation", "animation"), &GDDragonBones::set_current_animation);
     CLASS_BIND_GODO::bind_method(METH("get_current_animation"), &GDDragonBones::get_current_animation);
 
     CLASS_BIND_GODO::bind_method(METH("seek", "pos"), &GDDragonBones::seek);
@@ -756,20 +755,23 @@ void GDDragonBones::_bind_methods()
     CLASS_BIND_GODO::bind_method(METH("is_debug"), &GDDragonBones::is_debug);
 
     CLASS_BIND_GODO::bind_method(METH("flip_x", "enable_flip"), &GDDragonBones::flip_x);
-    CLASS_BIND_GODO::bind_method(METH("is_fliped_x"), &GDDragonBones::is_fliped_x);
+    CLASS_BIND_GODO::bind_method(METH("is_flipped_x"), &GDDragonBones::is_flipped_x);
     CLASS_BIND_GODO::bind_method(METH("flip_y", "enable_flip"), &GDDragonBones::flip_y);
-    CLASS_BIND_GODO::bind_method(METH("is_fliped_y"), &GDDragonBones::is_fliped_y);
+    CLASS_BIND_GODO::bind_method(METH("is_flipped_y"), &GDDragonBones::is_flipped_y);
 
     CLASS_BIND_GODO::bind_method(METH("set_speed", "speed"), &GDDragonBones::set_speed);
     CLASS_BIND_GODO::bind_method(METH("get_speed"), &GDDragonBones::get_speed);
+
+    CLASS_BIND_GODO::bind_method(METH("set_loop", "loop"), &GDDragonBones::set_loop);
+    CLASS_BIND_GODO::bind_method(METH("get_loop"), &GDDragonBones::get_loop);
 
     CLASS_BIND_GODO::bind_method(METH("set_animation_process_mode","mode"),&GDDragonBones::set_animation_process_mode);
     CLASS_BIND_GODO::bind_method(METH("get_animation_process_mode"),&GDDragonBones::get_animation_process_mode);
 
     ADD_PROPERTYNZ(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), _SCS("set_texture"), _SCS("get_texture"));
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug"), _SCS("set_debug"), _SCS("is_debug"));
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flipX"), _SCS("flip_x"), _SCS("is_fliped_x"));
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flipY"), _SCS("flip_y"), _SCS("is_fliped_y"));
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flipX"), _SCS("flip_x"), _SCS("is_flipped_x"));
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flipY"), _SCS("flip_y"), _SCS("is_flipped_y"));
 
 #if (VERSION_MAJOR == 3)
 #else
@@ -778,12 +780,15 @@ void GDDragonBones::_bind_methods()
 
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "resource", PROPERTY_HINT_RESOURCE_TYPE, "GDDragonBonesResource"), _SCS("set_resource"), _SCS("get_resource"));
 
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "playback/process_mode", PROPERTY_HINT_ENUM, "Fixed,Idle"), _SCS("set_animation_process_mode"), _SCS("get_animation_process_mode"));
-    ADD_PROPERTY(PropertyInfo(Variant::REAL, "playback/speed", PROPERTY_HINT_RANGE, "0,10,0.01"), _SCS("set_speed"), _SCS("get_speed"));
-    ADD_PROPERTY(PropertyInfo(Variant::REAL, "playback/progress", PROPERTY_HINT_RANGE, "-100,100,0.010"), _SCS("seek"), _SCS("get_progress"));
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "playback/play"), _SCS("play"), _SCS("is_playing"));
+    ADD_GROUP("Playback Options", "playback_");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "playback_process_mode", PROPERTY_HINT_ENUM, "Fixed,Idle"), _SCS("set_animation_process_mode"), _SCS("get_animation_process_mode"));
+    ADD_PROPERTY(PropertyInfo(Variant::REAL, "playback_speed", PROPERTY_HINT_RANGE, "0,10,0.01"), _SCS("set_speed"), _SCS("get_speed"));
+    ADD_PROPERTY(PropertyInfo(Variant::REAL, "playback_progress", PROPERTY_HINT_RANGE, "-100,100,0.010"), _SCS("seek"), _SCS("get_progress"));
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "playback_play"), _SCS("play"), _SCS("is_playing"));
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "playback_curr_animation", PROPERTY_HINT_ENUM, "[none]"), _SCS("set_current_animation"), _SCS("get_current_animation"));
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "playback_loop", PROPERTY_HINT_RANGE, "-1,100,1"), _SCS("set_loop"), _SCS("get_loop"));
 
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "childs use this material"), _SCS("set_inherit_material"), _SCS("is_material_inherited"));
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "inherit_material"), _SCS("set_inherit_material"), _SCS("is_material_inherited"));
 
     ADD_SIGNAL(MethodInfo("dragon_anim_start", PropertyInfo(Variant::STRING, "anim")));
     ADD_SIGNAL(MethodInfo("dragon_anim_complete", PropertyInfo(Variant::STRING, "anim")));
@@ -806,31 +811,32 @@ void GDDragonBones::_bind_methods()
     BIND_CONSTANT(FadeOut_Single);
 }
 
-void GDDragonBones::_get_property_list(List<PropertyInfo>* _p_list) const
-{
-    List<String> __l_names;
+void GDDragonBones::_validate_property(PropertyInfo &property) const {
 
-    if (b_inited && p_armature->getAnimation())
-    {
-        auto __names = p_armature->getAnimation()->getAnimationNames();
-        auto __it = __names.cbegin();
-        while(__it != __names.cend())
+    if (property.name == "playback_curr_animation") {
+        List<String> __l_names;
+
+        if (b_inited && p_armature->getAnimation())
         {
-            __l_names.push_back(__it->c_str());
-            ++__it;
+            auto __names = p_armature->getAnimation()->getAnimationNames();
+            auto __it = __names.cbegin();
+            while(__it != __names.cend())
+            {
+                __l_names.push_back(__it->c_str());
+                ++__it;
+            }
         }
-    }
 
-    __l_names.sort();
-    __l_names.push_front("[none]");
-    String __str_hint;
-    for (List<String>::Element* __p_E = __l_names.front(); __p_E; __p_E = __p_E->next())
-    {
-       if (__p_E != __l_names.front())
-           __str_hint += ",";
-           __str_hint += __p_E->get();
-    }
+        __l_names.sort();
+        __l_names.push_front("[none]");
+        String hint;
+        for (List<String>::Element *E = __l_names.front(); E; E = E->next()) {
 
-    _p_list->push_back(PropertyInfo(Variant::STRING, "playback/curr_animation", PROPERTY_HINT_ENUM, __str_hint));
-    _p_list->push_back(PropertyInfo(Variant::INT, "playback/loop", PROPERTY_HINT_RANGE, "-1,100,1"));
+            if (E != __l_names.front())
+                hint += ",";
+            hint += E->get();
+        }
+
+        property.hint_string = hint;
+    }
 }
