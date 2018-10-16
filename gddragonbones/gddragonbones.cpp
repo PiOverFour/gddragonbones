@@ -4,14 +4,16 @@
 #include "core/os/file_access.h"
 #include "core/os/os.h"
 
-#include "method_bind_ext.gen.inc"
-
 #if (VERSION_MAJOR == 3)
+
+#include "core/method_bind_ext.gen.inc"
+
     #define CLASS_BIND_GODO  ClassDB
     #define METH             D_METHOD
     #define _SCS(val)        val
 #else
 
+#include "method_bind_ext.gen.inc"
 #include "core/globals.h"
 
     #define CLASS_BIND_GODO  ObjectTypeDB

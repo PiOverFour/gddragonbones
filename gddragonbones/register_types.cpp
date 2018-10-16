@@ -1,4 +1,8 @@
+#if __has_include(<core/version_generated.gen.h>)
+#include <core/version_generated.gen.h>
+#else
 #include <version_generated.gen.h>
+#endif
 
 #if (VERSION_MAJOR == 3)
 #include <core/class_db.h>
