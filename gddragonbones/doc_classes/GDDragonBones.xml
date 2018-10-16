@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GDDragonBones" inherits="GDOwnerNode" category="Core" version="3.1">
+	<brief_description>
+		A node to import DragonBones animations.
+	</brief_description>
+	<description>
+		A node to import DragonBones animations.
+		Github: https://github.com/sanja-sa/gddragonbones
+	</description>
+	<tutorials>
+	</tutorials>
+	<demos>
+	</demos>
+	<methods>
+		<method name="fade_in">
+			<return type="void">
+			</return>
+			<argument index="0" name="anim_name" type="String">
+				The animation name.
+			</argument>
+			<argument index="1" name="time" type="float">
+				The fade in time. [-1: Use the default value of animation data, [0~N]: The fade in time (In seconds)] (Default: -1)
+			</argument>
+			<argument index="2" name="loop" type="int">
+				playing repeat times. [-1: Use the default value of animation data, 0: No end loop playing, [1~N]: Repeat N times] (Default: -1)
+			</argument>
+			<argument index="3" name="layer" type="int">
+				The blending layer, the animation states in high level layer will get the blending weights with high priority, when the total blending weights are more than 1.0, there will be no more weights can be allocated to the other animation states. (Default: 0)
+			</argument>
+			<argument index="4" name="group" type="String">
+				The blending group name, it is typically used to specify the substitution of multiple animation states blending. (Default: null)
+			</argument>
+			<argument index="5" name="fade_out_mode" type="int" enum="GDDragonBones.AnimFadeOutMode">
+				The fade out mode, which is typically used to specify alternate mode of multiple animation states blending. (Default: GDDragonBones.FadeOut_SameLayerAndGroup)
+			</argument>
+			<description>
+				Play animation by layers, see DragonBones documentation for parameters
+				# 1. anim_name 	-- The name animation.
+				# 2. time 	-- The fade in time. [-1: Use the default value of animation data, [0~N]: The fade in time (In seconds)] (Default: -1)
+				# 3. loop 	-- playing repeat times. [-1: Use the default value of animation data, 0: No end loop playing, [1~N]: Repeat N times] (Default: -1)
+				# 4. layer 	-- The blending layer, the animation states in high level layer will get the blending weights with high priority, when the total blending weights are more than 1.0, there will be no more weights can be allocated to the other animation states. (Default: 0)
+				# 5. group 	-- The blending group name, it is typically used to specify the substitution of multiple animation states blending. (Default: null)
+				# 6. fade_out_mode -- The fade out mode, which is typically used to specify alternate mode of multiple animation states blending. See FadeOut_ constants. (Default: GDDragonBones.FadeOut_SameLayerAndGroup)
+
+			</description>
+		</method>
+		<method name="fade_out">
+			<return type="void">
+			</return>
+			<argument index="0" name="anim_name" type="String">
+			</argument>
+			<description>
+				Stop specified animation by name.
+			</description>
+		</method>
+		<method name="has" qualifiers="const">
+			<return type="bool">
+			</return>
+			<argument index="0" name="name" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="is_active" qualifiers="const">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="play_from_progress">
+			<return type="void">
+			</return>
+			<argument index="0" name="progress" type="float">
+			</argument>
+			<description>
+				Start play from progress [0 - 1].
+			</description>
+		</method>
+		<method name="play_from_time">
+			<return type="void">
+			</return>
+			<argument index="0" name="time" type="float">
+			</argument>
+			<description>
+				Start playing the animation from the specified time.
+			</description>
+		</method>
+		<method name="reset">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="set_active">
+			<return type="void">
+			</return>
+			<argument index="0" name="active" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="stop">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+				Stop the currently playing animation.
+			</description>
+		</method>
+		<method name="stop_all">
+			<return type="void">
+			</return>
+			<description>
+				Stop all animations.
+			</description>
+		</method>
+		<method name="tell" qualifiers="const">
+			<return type="float">
+			</return>
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="debug" type="bool" setter="set_debug" getter="is_debug">
+		</member>
+		<member name="flipX" type="bool" setter="flip_x" getter="is_flipped_x">
+			Flip the character along the X axis.
+		</member>
+		<member name="flipY" type="bool" setter="flip_y" getter="is_flipped_y">
+			Flip the character along the Y axis.
+		</member>
+		<member name="inherit_material" type="bool" setter="set_inherit_material" getter="is_material_inherited">
+		</member>
+		<member name="playback_curr_animation" type="String" setter="set_current_animation" getter="get_current_animation">
+			Set current animation, if not chosen before
+		</member>
+		<member name="playback_loop" type="int" setter="set_loop" getter="get_loop">
+			Number of times the animation will play before stopping.
+			-1 for infiny.
+		</member>
+		<member name="playback_play" type="bool" setter="play" getter="is_playing">
+		</member>
+		<member name="playback_process_mode" type="int" setter="set_animation_process_mode" getter="get_animation_process_mode" enum="GDDragonBones.AnimMode">
+		</member>
+		<member name="playback_progress" type="float" setter="seek" getter="get_progress">
+		</member>
+		<member name="playback_speed" type="float" setter="set_speed" getter="get_speed">
+			Playback speed.
+		</member>
+		<member name="resource" type="GDDragonBonesResource" setter="set_resource" getter="get_resource">
+			DragonBones _ske.json file
+		</member>
+		<member name="texture" type="Texture" setter="set_texture" getter="get_texture">
+			Texture used for the character.
+		</member>
+	</members>
+	<signals>
+		<signal name="dragon_anim_complete">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_anim_event">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<argument index="1" name="ev" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_anim_loop_complete">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_anim_snd_event">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<argument index="1" name="ev" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_anim_start">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_fade_in">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_fade_in_complete">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_fade_out">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dragon_fade_out_complete">
+			<argument index="0" name="anim" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="ANIMATION_PROCESS_FIXED" value="0">
+		</constant>
+		<constant name="ANIMATION_PROCESS_IDLE" value="1">
+		</constant>
+		<constant name="FadeOut_None" value="0">
+			Do not fade out of any animation states.
+		</constant>
+		<constant name="FadeOut_SameLayer" value="1">
+			Fade out the animation states of the same layer.
+		</constant>
+		<constant name="FadeOut_SameGroup" value="2">
+			Fade out the animation states of the same group.
+		</constant>
+		<constant name="FadeOut_SameLayerAndGroup" value="3">
+			Fade out the animation states of the same layer and group.
+		</constant>
+		<constant name="FadeOut_All" value="4">
+			Fade out of all animation states.
+		</constant>
+		<constant name="FadeOut_Single" value="5">
+			Does not replace the animation state with the same name.
+		</constant>
+	</constants>
+</class>
